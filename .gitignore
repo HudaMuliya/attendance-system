@@ -1,0 +1,17 @@
+# Backend (Python)
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/attendance.db
+
+# Frontend (React/Vite)
+admin-web/node_modules/
+admin-web/dist/
+admin-web/dist-ssr/
+admin-web/*.local
+admin-web/.eslintcache
+
+# OS
+.DS_Store
+.vscode/
