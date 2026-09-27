@@ -48,3 +48,8 @@ class AttendanceResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class StatsResponse(BaseModel):
+    present: int
+    late: int
+    absent: int

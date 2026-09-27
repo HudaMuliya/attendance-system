@@ -61,3 +61,58 @@
   color: var(--text-secondary);
   font-weight: 500;
 }
+
+.tableContainer {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.premiumTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.premiumTable th {
+  padding: 1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.premiumTable td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.premiumTable tr:last-child td {
+  border-bottom: none;
+}
+
+.premiumTable tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.statusBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.statusBadge.present {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+}
+
+.statusBadge.late {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.statusBadge.absent {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+}

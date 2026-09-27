@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, date
 from fastapi.security import OAuth2PasswordRequestForm
 import models, schemas, database, haversine, auth
+from typing import List
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -37,6 +38,10 @@ def create_office(office: schemas.OfficeCreate, db: Session = Depends(get_db)):
     db.refresh(db_office)
     return db_office
 
+@app.get("/api/offices", response_model=List[schemas.OfficeResponse])
+def get_offices(db: Session = Depends(get_db)):
+    return db.query(models.Office).all()
+
 @app.post("/api/users", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     existing = db.query(models.User).filter(models.User.email == user.email).first()
@@ -54,6 +59,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+@app.get("/api/users", response_model=List[schemas.UserResponse])
+def get_users(db: Session = Depends(get_db)):
+    return db.query(models.User).all()
 
 @app.post("/api/auth/login", response_model=schemas.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -80,7 +89,7 @@ def clock_in(req: schemas.ClockInRequest, db: Session = Depends(get_db), current
         raise HTTPException(status_code=400, detail=f"Out of range. You are {int(distance)}m away (Max: {office.radius}m)")
         
     # 3. Check if already clocked in today
-    today_str = date.today().strftime("%Y-%M-%d")
+    today_str = date.today().strftime("%Y-%m-%d")
     existing = db.query(models.Attendance).filter(
         models.Attendance.user_id == current_user.id, 
         models.Attendance.date == today_str
@@ -120,7 +129,7 @@ def clock_out(req: schemas.ClockInRequest, db: Session = Depends(get_db), curren
     if distance > office.radius:
         raise HTTPException(status_code=400, detail=f"Out of range. You are {int(distance)}m away (Max: {office.radius}m)")
         
-    today_str = date.today().strftime("%Y-%M-%d")
+    today_str = date.today().strftime("%Y-%m-%d")
     existing = db.query(models.Attendance).filter(
         models.Attendance.user_id == current_user.id, 
         models.Attendance.date == today_str
@@ -138,3 +147,39 @@ def clock_out(req: schemas.ClockInRequest, db: Session = Depends(get_db), curren
     db.commit()
     db.refresh(existing)
     return {"message": "Clock out successful", "distance_m": int(distance)}
+
+@app.get("/api/attendances/stats", response_model=schemas.StatsResponse)
+def get_attendance_stats(db: Session = Depends(get_db)):
+    today_str = date.today().strftime("%Y-%m-%d")
+    
+    # Get all active users count
+    total_active_users = db.query(models.User).filter(models.User.is_active == True).count()
+    
+    # Get today's attendances
+    today_attendances = db.query(models.Attendance).filter(models.Attendance.date == today_str).all()
+    
+    present = sum(1 for a in today_attendances if a.status == "present")
+    late = sum(1 for a in today_attendances if a.status == "late")
+    
+    # Absent is active users minus those who clocked in today
+    absent = total_active_users - (present + late)
+    
+    return {"present": present, "late": late, "absent": max(0, absent)}
+
+@app.get("/api/attendances/recent")
+def get_recent_activity(db: Session = Depends(get_db)):
+    # Returns 5 most recent clock-ins/outs with user names
+    recent = db.query(models.Attendance).order_by(models.Attendance.id.desc()).limit(5).all()
+    
+    result = []
+    for a in recent:
+        result.append({
+            "id": a.id,
+            "user_name": a.user.name,
+            "date": a.date,
+            "check_in_time": a.check_in_time,
+            "check_out_time": a.check_out_time,
+            "status": a.status
+        })
+    return result
+

@@ -19,8 +19,8 @@ export default function DashboardLayout() {
         
         <nav className={styles.nav}>
           <Link to="/" className={styles.navItem}>Dashboard</Link>
-          {/* <Link to="/offices" className={styles.navItem}>Offices</Link>
-          <Link to="/employees" className={styles.navItem}>Employees</Link> */}
+          <Link to="/offices" className={styles.navItem}>Offices</Link>
+          <Link to="/employees" className={styles.navItem}>Employees</Link>
         </nav>
         
         <div className={styles.logoutWrapper}>

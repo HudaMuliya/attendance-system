@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Offices from './pages/Offices';
+import Employees from './pages/Employees';
 import DashboardLayout from './layouts/DashboardLayout';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -20,7 +22,8 @@ function App() {
           </PrivateRoute>
         }>
           <Route index element={<Dashboard />} />
-          {/* We will add Offices and Employees routes here later */}
+          <Route path="offices" element={<Offices />} />
+          <Route path="employees" element={<Employees />} />
         </Route>
       </Routes>
     </Router>
