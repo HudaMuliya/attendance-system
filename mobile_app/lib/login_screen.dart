@@ -3,9 +3,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Adjust this URL based on your emulator/device
-// 10.0.2.2 for Android emulator, localhost for iOS simulator/web
-const String baseUrl = 'http://127.0.0.1:8000/api';
+import 'package:flutter/foundation.dart';
+
+String get baseUrl {
+  if (kIsWeb) return 'http://127.0.0.1:8000/api';
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    return 'http://10.0.2.2:8000/api';
+  }
+  return 'http://127.0.0.1:8000/api';
+}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -72,6 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset('assets/logo.png', width: 120, height: 120, errorBuilder: (context, error, stackTrace) => const Icon(Icons.business, size: 120, color: Colors.blue)),
+            const SizedBox(height: 32),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),

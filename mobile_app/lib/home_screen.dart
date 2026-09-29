@@ -4,7 +4,15 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 
-const String baseUrl = 'http://127.0.0.1:8000/api';
+import 'package:flutter/foundation.dart';
+
+String get baseUrl {
+  if (kIsWeb) return 'http://127.0.0.1:8000/api';
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    return 'http://10.0.2.2:8000/api';
+  }
+  return 'http://127.0.0.1:8000/api';
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
